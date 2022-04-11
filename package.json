@@ -4,7 +4,7 @@
   "description": "Simple telegrambot for shop based on node.js and MongoDB",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon src/index.js"
+    "start": "node src/index.js"
   },
   "keywords": [],
   "author": "Oleksii Palii",
