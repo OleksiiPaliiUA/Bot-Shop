@@ -49,7 +49,7 @@ const admin_bot = new TelegramBot(config.BOT_ADMIN_TOKEN, {
     }
 })
 
-helper.logStart()
+console.log('Admin_Bot has been started...')
 
 mongoose.connect(config.DB_TOKEN)
     .then(() => console.log('MongoDB has connected...'))
