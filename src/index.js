@@ -39,7 +39,7 @@ class Connection {
 mongoose.Promise = global.Promise
 process.env["NTBA_FIX_350"] = 1
 
-const bot = new TelegramBot(config.BOT_TOKEN, {
+const admin_bot = new TelegramBot(config.BOT_ADMIN_TOKEN, {
     polling: {
         interval: 300,
         autoStart: true,
@@ -78,9 +78,9 @@ const Accounts = mongoose.model('accounts')
 
 let GoodsCount
 
-bot.on("polling_error", console.log);
+admin_bot.on("polling_error", console.log)
 
-bot.on('callback_query', async query => {
+admin_bot.on('callback_query', async query => {
     if(Connections[GetArrayNumber(query.message.chat.id)] === undefined) {
         let tmp = new Connection(query.message.chat.id);
         Connections.push(tmp)
@@ -106,19 +106,19 @@ bot.on('callback_query', async query => {
                             }
                         })
                     }
-                    bot.sendMessage(query.message.chat.id, `<b>Товар №${goods.Article} был удалён! </b>`, helper.MainMenu)
+                    admin_bot.sendMessage(query.message.chat.id, `<b>Товар №${goods.Article} был удалён! </b>`, helper.MainMenu)
                     console.log(`Good ${goods.Article} was deleted!`)
-                    bot.deleteMessage(query.message.chat.id, Connections[GetArrayNumber(query.message.chat.id)].msgid)
+                    admin_bot.deleteMessage(query.message.chat.id, Connections[GetArrayNumber(query.message.chat.id)].msgid)
                     Connections[GetArrayNumber(query.message.chat.id)].article = -1
                 })
             break
         case 'RemoveGoodByArticleRefuse':
-            await bot.sendMessage(query.message.chat.id, `<b>Удаление товара №${Connections[GetArrayNumber(query.message.chat.id)].article} было отменено! </b>`, helper.MainMenu)
-            await bot.deleteMessage(query.message.chat.id, Connections[GetArrayNumber(query.message.chat.id)].msgid)
+            await admin_bot.sendMessage(query.message.chat.id, `<b>Удаление товара №${Connections[GetArrayNumber(query.message.chat.id)].article} было отменено! </b>`, helper.MainMenu)
+            await admin_bot.deleteMessage(query.message.chat.id, Connections[GetArrayNumber(query.message.chat.id)].msgid)
             Connections[GetArrayNumber(query.message.chat.id)].article = '-1'
             break
         case 'Photo_Availability_false':
-            await bot.sendMessage(query.message.chat.id, names.Available, {parse_mode: 'HTML'})
+            await admin_bot.sendMessage(query.message.chat.id, names.Available, {parse_mode: 'HTML'})
             Connections[GetArrayNumber(query.message.chat.id)].stage = 'Available'
             break
         case 'Forward':
@@ -126,7 +126,7 @@ bot.on('callback_query', async query => {
                 .then(async goods => {
                     GoodsCount = await Goods.count({});
                     if(goods.Photo_Availability === true) {
-                        await bot.editMessageMedia({
+                        await admin_bot.editMessageMedia({
                             type: 'photo',
                             media: `attach://images/${goods.Article}.jpg`,
                             caption: `<b>Артикул: <i>${goods.Article}</i>\nНазвание товара: <i>${goods.Good_name}</i>\nОписание: <i>${goods.Description}</i>\nЦена: <i>${goods.Price} грн.</i>\nВ наличии: <i>${goods.Available} шт.</i></b>`,
@@ -136,7 +136,7 @@ bot.on('callback_query', async query => {
                             message_id: Connections[GetArrayNumber(query.message.chat.id)].msgid
                         })
                         if(GoodsCount-2 === Connections[GetArrayNumber(query.message.chat.id)].catalogid) {
-                            await bot.editMessageReplyMarkup({
+                            await admin_bot.editMessageReplyMarkup({
                                 inline_keyboard: helper.BackwardKeyboard
                             }, {
                                 chat_id: query.message.chat.id,
@@ -144,7 +144,7 @@ bot.on('callback_query', async query => {
                             })
                         }
                         else {
-                            await bot.editMessageReplyMarkup({
+                            await admin_bot.editMessageReplyMarkup({
                                 inline_keyboard: helper.CatalogKeyboard
                             }, {
                                 chat_id: query.message.chat.id,
@@ -153,7 +153,7 @@ bot.on('callback_query', async query => {
                         }
                     }
                     else {
-                        await bot.editMessageMedia({
+                        await admin_bot.editMessageMedia({
                             type: 'photo',
                             media: `attach://images/0.jpg`,
                             caption: `<b>Артикул: <i>${goods.Article}</i>\nНазвание товара: <i>${goods.Good_name}</i>\nОписание: <i>${goods.Description}</i>\nЦена: <i>${goods.Price} грн.</i>\nВ наличии: <i>${goods.Available} шт.</i></b>`,
@@ -163,7 +163,7 @@ bot.on('callback_query', async query => {
                             message_id: Connections[GetArrayNumber(query.message.chat.id)].msgid
                         })
                         if(GoodsCount-2 === Connections[GetArrayNumber(query.message.chat.id)].catalogid) {
-                            await bot.editMessageReplyMarkup({
+                            await admin_bot.editMessageReplyMarkup({
                                 inline_keyboard: helper.BackwardKeyboard
                             }, {
                                 chat_id: query.message.chat.id,
@@ -171,7 +171,7 @@ bot.on('callback_query', async query => {
                             })
                         }
                         else {
-                            await bot.editMessageReplyMarkup({
+                            await admin_bot.editMessageReplyMarkup({
                                 inline_keyboard: helper.CatalogKeyboard
                             }, {
                                 chat_id: query.message.chat.id,
@@ -187,7 +187,7 @@ bot.on('callback_query', async query => {
                 .then(async goods => {
                     GoodsCount = await Goods.count({})
                     if(goods.Photo_Availability === true) {
-                        await bot.editMessageMedia({
+                        await admin_bot.editMessageMedia({
                             type: 'photo',
                             media: `attach://images/${goods.Article}.jpg`,
                             caption: `<b>Артикул: <i>${goods.Article}</i>\nНазвание товара: <i>${goods.Good_name}</i>\nОписание: <i>${goods.Description}</i>\nЦена: <i>${goods.Price} грн.</i>\nВ наличии: <i>${goods.Available} шт.</i></b>`,
@@ -197,7 +197,7 @@ bot.on('callback_query', async query => {
                             message_id: Connections[GetArrayNumber(query.message.chat.id)].msgid
                         })
                         if(Connections[GetArrayNumber(query.message.chat.id)].catalogid === 1) {
-                            await bot.editMessageReplyMarkup({
+                            await admin_bot.editMessageReplyMarkup({
                                 inline_keyboard: helper.ForwardKeyboard
                             }, {
                                 chat_id: query.message.chat.id,
@@ -205,7 +205,7 @@ bot.on('callback_query', async query => {
                             })
                         }
                         else {
-                            await bot.editMessageReplyMarkup({
+                            await admin_bot.editMessageReplyMarkup({
                                 inline_keyboard: helper.CatalogKeyboard
                             }, {
                                 chat_id: query.message.chat.id,
@@ -214,7 +214,7 @@ bot.on('callback_query', async query => {
                         }
                     }
                     else {
-                        await bot.editMessageMedia({
+                        await admin_bot.editMessageMedia({
                             type: 'photo',
                             media: `attach://images/0.jpg`,
                             caption: `<b>Артикул: <i>${goods.Article}</i>\nНазвание товара: <i>${goods.Good_name}</i>\nОписание: <i>${goods.Description}</i>\nЦена: <i>${goods.Price} грн.</i>\nВ наличии: <i>${goods.Available} шт.</i></b>`,
@@ -224,7 +224,7 @@ bot.on('callback_query', async query => {
                             message_id: Connections[GetArrayNumber(query.message.chat.id)].msgid
                         })
                         if(Connections[GetArrayNumber(query.message.chat.id)].catalogid === 1) {
-                            await bot.editMessageReplyMarkup({
+                            await admin_bot.editMessageReplyMarkup({
                                 inline_keyboard: helper.ForwardKeyboard
                             }, {
                                 chat_id: query.message.chat.id,
@@ -232,7 +232,7 @@ bot.on('callback_query', async query => {
                             })
                         }
                         else {
-                            await bot.editMessageReplyMarkup({
+                            await admin_bot.editMessageReplyMarkup({
                                 inline_keyboard: helper.CatalogKeyboard
                             }, {
                                 chat_id: query.message.chat.id,
@@ -250,7 +250,7 @@ bot.on('callback_query', async query => {
             }
             else {
                 if(Connections[GetArrayNumber(query.message.chat.id)].msgid !== -1){
-                    await bot.deleteMessage(query.message.chat.id, Connections[GetArrayNumber(query.message.chat.id)].msgid)
+                    await admin_bot.deleteMessage(query.message.chat.id, Connections[GetArrayNumber(query.message.chat.id)].msgid)
                 }
                 Connections[GetArrayNumber(query.message.chat.id)].stage = '-1'
                 Connections[GetArrayNumber(query.message.chat.id)].article = Number(-1)
@@ -261,21 +261,21 @@ bot.on('callback_query', async query => {
                 Connections[GetArrayNumber(query.message.chat.id)].msgid = Number(-1)
                 Connections[GetArrayNumber(query.message.chat.id)].id = Number(-1)
             }
-            await bot.sendMessage(query.message.chat.id, `<i>Что вас интересует?</i>`, helper.MainMenu)
+            await admin_bot.sendMessage(query.message.chat.id, `<i>Что вас интересует?</i>`, helper.MainMenu)
             break
         case 'EditGoodArticle':
-            await bot.sendMessage(query.message.chat.id, names.Article, {parse_mode: 'HTML'})
+            await admin_bot.sendMessage(query.message.chat.id, names.Article, {parse_mode: 'HTML'})
             Connections[GetArrayNumber(query.message.chat.id)].stage = 'EditArticle'
             break
         case 'EditGoodName':
-            await bot.sendMessage(query.message.chat.id, names.GoodName, {parse_mode: 'HTML'})
+            await admin_bot.sendMessage(query.message.chat.id, names.GoodName, {parse_mode: 'HTML'})
             Connections[GetArrayNumber(query.message.chat.id)].stage = 'EditName'
             break
     }
 })
 
 
-bot.on('text', async msg => {
+admin_bot.on('text', async msg => {
     GoodsCount = await Goods.count({});
     if(Connections[GetArrayNumber(msg.chat.id)] === undefined) {
         let tmp = new Connection(msg.chat.id)
@@ -290,7 +290,7 @@ bot.on('text', async msg => {
         Connections[GetArrayNumber(msg.chat.id)].photo_availability = false
         Connections[GetArrayNumber(msg.chat.id)].msgid = Number(-1)
         Connections[GetArrayNumber(msg.chat.id)].id = Number(-1)
-        await bot.sendMessage(msg.chat.id, names.ActionRefuse, helper.MainMenu)
+        await admin_bot.sendMessage(msg.chat.id, names.ActionRefuse, helper.MainMenu)
     }
     if(msg.text === '/start'){
         let sender = msg.from.username ? msg.from.username : msg.from.first_name
@@ -299,9 +299,6 @@ bot.on('text', async msg => {
             Connections.push(tmp)
         }
         else {
-            if(Connections[GetArrayNumber(msg.chat.id)].msgid !== -1){
-                await bot.deleteMessage(msg.chat.id, Connections[GetArrayNumber(msg.chat.id)].msgid)
-            }
             Connections[GetArrayNumber(msg.chat.id)].stage = '-1'
             Connections[GetArrayNumber(msg.chat.id)].article = Number(-1)
             Connections[GetArrayNumber(msg.chat.id)].name = '-1'
@@ -311,7 +308,7 @@ bot.on('text', async msg => {
             Connections[GetArrayNumber(msg.chat.id)].msgid = Number(-1)
             Connections[GetArrayNumber(msg.chat.id)].id = Number(-1)
         }
-        await bot.sendMessage(msg.chat.id, `<strong>Здравствуйте, <u>${sender}</u>\nВас приветствует бот для администрирования своим магазином в телеграмме</strong>\n<i>Что вас интересует?</i>`, helper.MainMenu)
+        await admin_bot.sendMessage(msg.chat.id, `<strong>Здравствуйте, <u>${sender}</u>\nВас приветствует бот для администрирования своим магазином в телеграмме</strong>\n<i>Что вас интересует?</i>`, helper.MainMenu)
     }
     if(Connections[GetArrayNumber(msg.chat.id)] !== undefined){
         switch(Connections[GetArrayNumber(msg.chat.id)].stage) {
@@ -321,7 +318,7 @@ bot.on('text', async msg => {
                         .then(goods => {
                             if(goods){
                                 if(goods.Photo_Availability === true){
-                                    bot.sendPhoto(msg.chat.id, `images/${goods.Article}.jpg`, {
+                                    admin_bot.sendPhoto(msg.chat.id, `images/${goods.Article}.jpg`, {
                                         caption: `<b>Артикул: <i>${goods.Article}</i>\nНазвание товара: <i>${goods.Good_name}</i>\nОписание: <i>${goods.Description}</i>\nЦена: <i>${goods.Price} грн.</i>\nВ наличии: <i>${goods.Available} шт.</i></b>`,
                                         parse_mode: 'HTML',
                                         reply_markup: {
@@ -332,7 +329,7 @@ bot.on('text', async msg => {
                                     })
                                 }
                                 else {
-                                    bot.sendPhoto(msg.chat.id, `images/0.jpg`, {
+                                    admin_bot.sendPhoto(msg.chat.id, `images/0.jpg`, {
                                         caption: `<b>Артикул: <i>${goods.Article}</i>\nНазвание товара: <i>${goods.Good_name}</i>\nОписание: <i>${goods.Description}</i>\nЦена: <i>${goods.Price} грн.</i>\nВ наличии: <i>${goods.Available} шт.</i></b>`,
                                         parse_mode: 'HTML',
                                         reply_markup: {
@@ -345,13 +342,13 @@ bot.on('text', async msg => {
                                 Connections[GetArrayNumber(msg.chat.id)].stage = '-1'
                             }
                             else {
-                                bot.sendMessage(msg.chat.id, names.GoodIsEmpty, {parse_mode: "HTML"})
+                                admin_bot.sendMessage(msg.chat.id, names.GoodIsEmpty, {parse_mode: "HTML"})
                             }
 
                         })
                 }
                 else {
-                    await bot.sendMessage(msg.chat.id, names.ArticleIsNaN, {parse_mode: "HTML"})
+                    await admin_bot.sendMessage(msg.chat.id, names.ArticleIsNaN, {parse_mode: "HTML"})
                 }
                 break
             case 'RemoveGoodByArticle':
@@ -361,7 +358,7 @@ bot.on('text', async msg => {
                         .then(goods => {
                             if(goods){
                                 if(goods.Photo_Availability === true){
-                                    bot.sendPhoto(msg.chat.id, `images/${goods.Article}.jpg`, {
+                                    admin_bot.sendPhoto(msg.chat.id, `images/${goods.Article}.jpg`, {
                                         caption: `<b>Артикул: <i>${goods.Article}</i>\nНазвание товара: <i>${goods.Good_name}</i>\nОписание: <i>${goods.Description}</i>\nЦена: <i>${goods.Price} грн.</i>\nВ наличии: <i>${goods.Available} шт.</i>\n<u>Вы уверены что хотите удалить товар?</u></b>`,
                                         parse_mode: 'HTML',
                                         reply_markup: {
@@ -372,7 +369,7 @@ bot.on('text', async msg => {
                                     })
                                 }
                                 else {
-                                    bot.sendPhoto(msg.chat.id, `images/0.jpg`, {
+                                    admin_bot.sendPhoto(msg.chat.id, `images/0.jpg`, {
                                         caption: `<b>Артикул: <i>${goods.Article}</i>\nНазвание товара: <i>${goods.Good_name}</i>\nОписание: <i>${goods.Description}</i>\nЦена: <i>${goods.Price} грн.</i>\nВ наличии: <i>${goods.Available} шт.</i>\n<u>Вы уверены что хотите удалить товар?</u></b>`,
                                         parse_mode: 'HTML',
                                         reply_markup: {
@@ -385,18 +382,18 @@ bot.on('text', async msg => {
                                 Connections[GetArrayNumber(msg.chat.id)].stage = '-1'
                             }
                             else {
-                                bot.sendMessage(msg.chat.id, names.GoodIsEmpty, {parse_mode: "HTML"})
+                                admin_bot.sendMessage(msg.chat.id, names.GoodIsEmpty, {parse_mode: "HTML"})
                             }
                         })
                 }
                 else {
-                    await bot.sendMessage(msg.chat.id, names.ArticleIsNaN, {parse_mode: "HTML"})
+                    await admin_bot.sendMessage(msg.chat.id, names.ArticleIsNaN, {parse_mode: "HTML"})
                 }
                 break
             case 'Available':
                 if(!isNaN(Number(msg.text))){
                     Connections[GetArrayNumber(msg.chat.id)].available = Number(msg.text)
-                    await bot.sendMessage(msg.chat.id, `<b>Товар '${Connections[GetArrayNumber(msg.chat.id)].name}' [Art. ${Connections[GetArrayNumber(msg.chat.id)].article}] добавлен в базу! </b>`, {parse_mode: "HTML"})
+                    await admin_bot.sendMessage(msg.chat.id, `<b>Товар '${Connections[GetArrayNumber(msg.chat.id)].name}' [Art. ${Connections[GetArrayNumber(msg.chat.id)].article}] добавлен в базу! </b>`, {parse_mode: "HTML"})
                     GoodsCount = await Goods.count({});
                     let tmp = new Goods({
                         ID: GoodsCount,
@@ -411,7 +408,7 @@ bot.on('text', async msg => {
                         .then(() => console.log(`Good ${Connections[GetArrayNumber(msg.chat.id)].article} was added!`))
                         .catch(e => console.log(e))
                     if(Connections[GetArrayNumber(msg.chat.id)].photo_availability === true){
-                        await bot.sendPhoto(msg.chat.id, `images/${Connections[GetArrayNumber(msg.chat.id)].article}.jpg`, {
+                        await admin_bot.sendPhoto(msg.chat.id, `images/${Connections[GetArrayNumber(msg.chat.id)].article}.jpg`, {
                             caption: `<b>Артикул: <i>${Connections[GetArrayNumber(msg.chat.id)].article}</i>\nНазвание товара: <i>${Connections[GetArrayNumber(msg.chat.id)].name}</i>\nОписание: <i>${Connections[GetArrayNumber(msg.chat.id)].description}</i>\nЦена: <i>${Connections[GetArrayNumber(msg.chat.id)].price} грн.</i>\nВ наличии: <i>${Connections[GetArrayNumber(msg.chat.id)].available} шт.</i></b>`,
                             parse_mode: 'HTML',
                             reply_markup: {
@@ -422,7 +419,7 @@ bot.on('text', async msg => {
                         })
                     }
                     else {
-                        await bot.sendPhoto(msg.chat.id, `images/0.jpg`, {
+                        await admin_bot.sendPhoto(msg.chat.id, `images/0.jpg`, {
                             caption: `<b>Артикул: <i>${Connections[GetArrayNumber(msg.chat.id)].article}</i>\nНазвание товара: <i>${Connections[GetArrayNumber(msg.chat.id)].name}</i>\nОписание: <i>${Connections[GetArrayNumber(msg.chat.id)].description}</i>\nЦена: <i>${Connections[GetArrayNumber(msg.chat.id)].price} грн.</i>\nВ наличии: <i>${Connections[GetArrayNumber(msg.chat.id)].available} шт.</i></b>`,
                             parse_mode: 'HTML',
                             reply_markup: {
@@ -442,12 +439,12 @@ bot.on('text', async msg => {
                     Connections[GetArrayNumber(msg.chat.id)].id = Number(-1)
                 }
                 else {
-                    await bot.sendMessage(msg.chat.id, names.AvailableIsNaN, {parse_mode: "HTML"})
+                    await admin_bot.sendMessage(msg.chat.id, names.AvailableIsNaN, {parse_mode: "HTML"})
                 }
                 break
             case 'Description':
                 Connections[GetArrayNumber(msg.chat.id)].description = msg.text
-                await bot.sendMessage(msg.chat.id, names.Photo, {
+                await admin_bot.sendMessage(msg.chat.id, names.Photo, {
                     parse_mode: 'HTML',
                     reply_markup: {
                         inline_keyboard: helper.WithoutPhotoKeyboard
@@ -458,39 +455,39 @@ bot.on('text', async msg => {
             case 'Price':
                 if(!isNaN(Number(msg.text))){
                     Connections[GetArrayNumber(msg.chat.id)].price = Number(msg.text)
-                    await bot.sendMessage(msg.chat.id, names.Description, {parse_mode: 'HTML'})
+                    await admin_bot.sendMessage(msg.chat.id, names.Description, {parse_mode: 'HTML'})
                     Connections[GetArrayNumber(msg.chat.id)].stage = 'Description'
                 }
                 else {
-                    await bot.sendMessage(msg.chat.id, names.PriceIsNaN, {parse_mode: "HTML"})
+                    await admin_bot.sendMessage(msg.chat.id, names.PriceIsNaN, {parse_mode: "HTML"})
                 }
                 break
             case 'Name':
                 Connections[GetArrayNumber(msg.chat.id)].name = msg.text
-                await bot.sendMessage(msg.chat.id, names.Price, {parse_mode: 'HTML'})
+                await admin_bot.sendMessage(msg.chat.id, names.Price, {parse_mode: 'HTML'})
                 Connections[GetArrayNumber(msg.chat.id)].stage = 'Price'
                 break
             case 'Article':
                 if(!isNaN(Number(msg.text))){
                     if(msg.text < 1){
-                        await bot.sendMessage(msg.chat.id, names.ArticleLessThan1, {parse_mode: "HTML"})
+                        await admin_bot.sendMessage(msg.chat.id, names.ArticleLessThan1, {parse_mode: "HTML"})
                     }
                     else {
                         await Goods.findOne({ Article: msg.text })
                             .then(async (goods) => {
                                 if(goods) {
-                                    await bot.sendMessage(msg.chat.id, names.ArticleIsAlreadyExists, {parse_mode: 'HTML'})
+                                    await admin_bot.sendMessage(msg.chat.id, names.ArticleIsAlreadyExists, {parse_mode: 'HTML'})
                                 }
                                 else {
                                     Connections[GetArrayNumber(msg.chat.id)].article = Number(msg.text)
-                                    await bot.sendMessage(msg.chat.id, names.GoodName, {parse_mode: 'HTML'})
+                                    await admin_bot.sendMessage(msg.chat.id, names.GoodName, {parse_mode: 'HTML'})
                                     Connections[GetArrayNumber(msg.chat.id)].stage = 'Name'
                                 }
                             })
                     }
                 }
                 else {
-                    await bot.sendMessage(msg.chat.id, names.ArticleIsNaN, {parse_mode: "HTML"})
+                    await admin_bot.sendMessage(msg.chat.id, names.ArticleIsNaN, {parse_mode: "HTML"})
                 }
                 break
             case 'EditGood':
@@ -500,7 +497,7 @@ bot.on('text', async msg => {
                             if(goods){
                                 Connections[GetArrayNumber(msg.chat.id)].article = Number(msg.text)
                                 if(goods.Photo_Availability === true){
-                                    bot.sendPhoto(msg.chat.id, `images/${goods.Article}.jpg`, {
+                                    admin_bot.sendPhoto(msg.chat.id, `images/${goods.Article}.jpg`, {
                                         caption: `<b>Артикул: <i>${goods.Article}</i>\nНазвание товара: <i>${goods.Good_name}</i>\nОписание: <i>${goods.Description}</i>\nЦена: <i>${goods.Price} грн.</i>\nВ наличии: <i>${goods.Available} шт.</i>\n\n<i>Что вы желаете изменить?</i></b>`,
                                         parse_mode: 'HTML',
                                         reply_markup: {
@@ -513,7 +510,7 @@ bot.on('text', async msg => {
                                     })
                                 }
                                 else {
-                                    bot.sendPhoto(msg.chat.id, `images/0.jpg`, {
+                                    admin_bot.sendPhoto(msg.chat.id, `images/0.jpg`, {
                                         caption: `<b>Артикул: <i>${goods.Article}</i>\nНазвание товара: <i>${goods.Good_name}</i>\nОписание: <i>${goods.Description}</i>\nЦена: <i>${goods.Price} грн.</i>\nВ наличии: <i>${goods.Available} шт.</i>\n\n<i>Что вы желаете изменить?</i></b>`,
                                         parse_mode: 'HTML',
                                         reply_markup: {
@@ -528,34 +525,34 @@ bot.on('text', async msg => {
                                 Connections[GetArrayNumber(msg.chat.id)].stage = '-1'
                             }
                             else {
-                                bot.sendMessage(msg.chat.id, names.GoodIsEmpty, {parse_mode: "HTML"})
+                                admin_bot.sendMessage(msg.chat.id, names.GoodIsEmpty, {parse_mode: "HTML"})
                             }
 
                         })
                 }
                 else {
-                    await bot.sendMessage(msg.chat.id, names.ArticleIsNaN, {parse_mode: "HTML"})
+                    await admin_bot.sendMessage(msg.chat.id, names.ArticleIsNaN, {parse_mode: "HTML"})
                 }
                 break
             case 'EditArticle':
                 if(!isNaN(Number(msg.text))){
                     if(Number(msg.text) < 1){
-                        await bot.sendMessage(msg.chat.id, names.ArticleLessThan1, {parse_mode: "HTML"})
+                        await admin_bot.sendMessage(msg.chat.id, names.ArticleLessThan1, {parse_mode: "HTML"})
                     }
                     else {
                         await Goods.findOne({ Article: msg.text })
                             .then(async (goodsfirst) => {
                                 if(goodsfirst) {
-                                    await bot.sendMessage(msg.chat.id, names.ArticleIsAlreadyExists, {parse_mode: 'HTML'})
+                                    await admin_bot.sendMessage(msg.chat.id, names.ArticleIsAlreadyExists, {parse_mode: 'HTML'})
                                 }
                                 else {
-                                    await bot.deleteMessage(msg.chat.id, Connections[GetArrayNumber(msg.chat.id)].msgid)
+                                    await admin_bot.deleteMessage(msg.chat.id, Connections[GetArrayNumber(msg.chat.id)].msgid)
                                     await Goods.findOneAndUpdate({ Article: Connections[GetArrayNumber(msg.chat.id)].article },{Article: msg.text})
                                     await Goods.findOne({ Article: msg.text })
                                         .then(async (goods) => {
                                             if(goods){
                                                 if(goods.Photo_Availability === true){
-                                                    await bot.sendPhoto(msg.chat.id, `images/${goods.Article}.jpg`, {
+                                                    await admin_bot.sendPhoto(msg.chat.id, `images/${goods.Article}.jpg`, {
                                                         caption: `<b>Артикул: <i>${goods.Article}</i>\nНазвание товара: <i>${goods.Good_name}</i>\nОписание: <i>${goods.Description}</i>\nЦена: <i>${goods.Price} грн.</i>\nВ наличии: <i>${goods.Available} шт.</i>\n\n<i>Успешно отредактировано!</i></b>`,
                                                         parse_mode: 'HTML',
                                                         reply_markup: {
@@ -566,7 +563,7 @@ bot.on('text', async msg => {
                                                     })
                                                 }
                                                 else {
-                                                    await bot.sendPhoto(msg.chat.id, `images/0.jpg`, {
+                                                    await admin_bot.sendPhoto(msg.chat.id, `images/0.jpg`, {
                                                         caption: `<b>Артикул: <i>${goods.Article}</i>\nНазвание товара: <i>${goods.Good_name}</i>\nОписание: <i>${goods.Description}</i>\nЦена: <i>${goods.Price} грн.</i>\nВ наличии: <i>${goods.Available} шт.</i>\n\n<i>Успешно отредактировано!</i></b>`,
                                                         parse_mode: 'HTML',
                                                         reply_markup: {
@@ -586,17 +583,17 @@ bot.on('text', async msg => {
                     }
                 }
                 else {
-                    await bot.sendMessage(msg.chat.id, names.ArticleIsNaN, {parse_mode: "HTML"})
+                    await admin_bot.sendMessage(msg.chat.id, names.ArticleIsNaN, {parse_mode: "HTML"})
                 }
                 break
             case 'EditName':
-                await bot.deleteMessage(msg.chat.id, Connections[GetArrayNumber(msg.chat.id)].msgid)
+                await admin_bot.deleteMessage(msg.chat.id, Connections[GetArrayNumber(msg.chat.id)].msgid)
                 await Goods.findOneAndUpdate({ Article: Connections[GetArrayNumber(msg.chat.id)].article },{Good_name: msg.text})
                 await Goods.findOne({ Article: Connections[GetArrayNumber(msg.chat.id)].article })
                     .then(async (goods) => {
                         if(goods){
                             if(goods.Photo_Availability === true){
-                                await bot.sendPhoto(msg.chat.id, `images/${goods.Article}.jpg`, {
+                                await admin_bot.sendPhoto(msg.chat.id, `images/${goods.Article}.jpg`, {
                                     caption: `<b>Артикул: <i>${goods.Article}</i>\nНазвание товара: <i>${goods.Good_name}</i>\nОписание: <i>${goods.Description}</i>\nЦена: <i>${goods.Price} грн.</i>\nВ наличии: <i>${goods.Available} шт.</i>\n\n<i>Успешно отредактировано!</i></b>`,
                                     parse_mode: 'HTML',
                                     reply_markup: {
@@ -607,7 +604,7 @@ bot.on('text', async msg => {
                                 })
                             }
                             else {
-                                await bot.sendPhoto(msg.chat.id, `images/0.jpg`, {
+                                await admin_bot.sendPhoto(msg.chat.id, `images/0.jpg`, {
                                     caption: `<b>Артикул: <i>${goods.Article}</i>\nНазвание товара: <i>${goods.Good_name}</i>\nОписание: <i>${goods.Description}</i>\nЦена: <i>${goods.Price} грн.</i>\nВ наличии: <i>${goods.Available} шт.</i>\n\n<i>Успешно отредактировано!</i></b>`,
                                     parse_mode: 'HTML',
                                     reply_markup: {
@@ -628,20 +625,20 @@ bot.on('text', async msg => {
     switch(msg.text) {
         case names.AddGood:
             Connections[GetArrayNumber(msg.chat.id)].stage = 'Article'
-            await bot.sendMessage(msg.chat.id, names.Article, helper.RefuseForm)
+            await admin_bot.sendMessage(msg.chat.id, names.Article, helper.RefuseForm)
             break
         case names.CatalogGood:
             if(GoodsCount === 0){
-                await bot.sendMessage(msg.chat.id, names.NoGoods, helper.MainMenu)
+                await admin_bot.sendMessage(msg.chat.id, names.NoGoods, helper.MainMenu)
             }
             else {
-                await bot.sendMessage(msg.chat.id, `<b>Всего товаров: ${GoodsCount}</b>`, {parse_mode:'HTML'})
+                await admin_bot.sendMessage(msg.chat.id, `<b>Всего товаров: ${GoodsCount}</b>`, {parse_mode:'HTML'})
                 Connections[GetArrayNumber(msg.chat.id)].catalogid = 0
                 Goods.findOne({ ID: Connections[GetArrayNumber(msg.chat.id)].catalogid })
                     .then(goods => {
                         if(GoodsCount === 1){
                             if(goods.Photo_Availability === true) {
-                                bot.sendPhoto(msg.chat.id, `images/${goods.Article}.jpg`, {
+                                admin_bot.sendPhoto(msg.chat.id, `images/${goods.Article}.jpg`, {
                                     caption: `<b>Артикул: <i>${goods.Article}</i>\nНазвание товара: <i>${goods.Good_name}</i>\nОписание: <i>${goods.Description}</i>\nЦена: <i>${goods.Price} грн.</i>\nВ наличии: <i>${goods.Available} шт.</i></b>`,
                                     parse_mode: 'HTML',
                                     reply_markup: {
@@ -660,7 +657,7 @@ bot.on('text', async msg => {
                                 })
                             }
                             else {
-                                bot.sendPhoto(msg.chat.id, `images/0.jpg`, {
+                                admin_bot.sendPhoto(msg.chat.id, `images/0.jpg`, {
                                     caption: `<b>Артикул: <i>${goods.Article}</i>\nНазвание товара: <i>${goods.Good_name}</i>\nОписание: <i>${goods.Description}</i>\nЦена: <i>${goods.Price} грн.</i>\nВ наличии: <i>${goods.Available} шт.</i></b>`,
                                     parse_mode: 'HTML',
                                     reply_markup: {
@@ -680,7 +677,7 @@ bot.on('text', async msg => {
                         }
                         else {
                             if(goods.Photo_Availability === true) {
-                                bot.sendPhoto(msg.chat.id, `images/${goods.Article}.jpg`, {
+                                admin_bot.sendPhoto(msg.chat.id, `images/${goods.Article}.jpg`, {
                                     caption: `<b>Артикул: <i>${goods.Article}</i>\nНазвание товара: <i>${goods.Good_name}</i>\nОписание: <i>${goods.Description}</i>\nЦена: <i>${goods.Price} грн.</i>\nВ наличии: <i>${goods.Available} шт.</i></b>`,
                                     parse_mode: 'HTML',
                                     reply_markup: {
@@ -692,7 +689,7 @@ bot.on('text', async msg => {
                                 })
                             }
                             else {
-                                bot.sendPhoto(msg.chat.id, `images/0.jpg`, {
+                                admin_bot.sendPhoto(msg.chat.id, `images/0.jpg`, {
                                     caption: `<b>Артикул: <i>${goods.Article}</i>\nНазвание товара: <i>${goods.Good_name}</i>\nОписание: <i>${goods.Description}</i>\nЦена: <i>${goods.Price} грн.</i>\nВ наличии: <i>${goods.Available} шт.</i></b>`,
                                     parse_mode: 'HTML',
                                     reply_markup: {
@@ -708,46 +705,46 @@ bot.on('text', async msg => {
             break
         case names.FindGood:
             if(GoodsCount === 0) {
-                await bot.sendMessage(msg.chat.id, names.NoGoods, helper.MainMenu)
+                await admin_bot.sendMessage(msg.chat.id, names.NoGoods, helper.MainMenu)
             }
             else {
                 Connections[GetArrayNumber(msg.chat.id)].stage = 'FindByArticle'
-                await bot.sendMessage(msg.chat.id, names.Article, helper.RefuseForm)
+                await admin_bot.sendMessage(msg.chat.id, names.Article, helper.RefuseForm)
             }
             break
         case names.RemoveGood:
             if(GoodsCount === 0) {
-                await bot.sendMessage(msg.chat.id, '<b>Товаров нету! </b>', helper.MainMenu)
+                await admin_bot.sendMessage(msg.chat.id, '<b>Товаров нету! </b>', helper.MainMenu)
             }
             else {
                 Connections[GetArrayNumber(msg.chat.id)].stage = 'RemoveGoodByArticle'
-                await bot.sendMessage(msg.chat.id, names.Article, helper.RefuseForm)
+                await admin_bot.sendMessage(msg.chat.id, names.Article, helper.RefuseForm)
             }
             break
         case names.EditGood:
             if(GoodsCount === 0) {
-                await bot.sendMessage(msg.chat.id, names.NoGoods, helper.MainMenu)
+                await admin_bot.sendMessage(msg.chat.id, names.NoGoods, helper.MainMenu)
             }
             else {
                 Connections[GetArrayNumber(msg.chat.id)].stage = 'EditGood'
-                await bot.sendMessage(msg.chat.id, names.Article, helper.RefuseForm)
+                await admin_bot.sendMessage(msg.chat.id, names.Article, helper.RefuseForm)
             }
             break
     }
 })
 
-bot.on('photo', async (msg) => {
+admin_bot.on('photo', async (msg) => {
     if(Connections[GetArrayNumber(msg.chat.id)] === undefined) {
         let tmp = new Connection(msg.chat.id)
         Connections.push(tmp)
     }
     if(Connections[GetArrayNumber(msg.chat.id)].stage === 'Photo') {
         let fileId = msg.photo[msg.photo.length-1].file_id;
-        let res = await fetch(`https://api.telegram.org/bot${config.BOT_TOKEN}/getFile?file_id=${fileId}`)
+        let res = await fetch(`https://api.telegram.org/bot${config.BOT_ADMIN_TOKEN}/getFile?file_id=${fileId}`)
         let res2 = await res.json();
-        let downloadURL = `https://api.telegram.org/file/bot${config.BOT_TOKEN}/${res2.result.file_path}`
+        let downloadURL = `https://api.telegram.org/file/bot${config.BOT_ADMIN_TOKEN}/${res2.result.file_path}`
         await helper.download(downloadURL, path.join('images', `${Connections[GetArrayNumber(msg.chat.id)].article}.jpg`), () => console.log(`Download photo ${fileId}.jpg!`))
-        await bot.sendMessage(msg.chat.id, names.Available, {parse_mode: 'HTML'})
+        await admin_bot.sendMessage(msg.chat.id, names.Available, {parse_mode: 'HTML'})
         Connections[GetArrayNumber(msg.chat.id)].photo_availability = true
         Connections[GetArrayNumber(msg.chat.id)].stage = 'Available'
     }
