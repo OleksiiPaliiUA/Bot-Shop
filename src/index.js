@@ -55,7 +55,8 @@ mongoose.connect(config.DB_TOKEN)
     .then(() => console.log('MongoDB has connected...'))
     .catch(e => console.log(e))
 
-require('./goods.model')
+require('../db_models/goods.model')
+require('../db_models/accounts.model')
 
 let Connections = []
 
@@ -73,6 +74,7 @@ function GetArrayNumber (id){
 }*/
 
 const Goods = mongoose.model('goods')
+const Accounts = mongoose.model('accounts')
 
 let GoodsCount
 
