@@ -1,13 +1,13 @@
 {
   "name": "bot-shop",
   "version": "1.0.0",
-  "description": "",
+  "description": "Simple telegrambot for shop based on node.js and MongoDB",
   "main": "index.js",
   "scripts": {
-      "start": "nodemon src/index.js"
-    },
+    "start": "nodemon src/index.js"
+  },
   "keywords": [],
-  "author": "",
+  "author": "Oleksii Palii",
   "license": "ISC",
   "dependencies": {
     "fetch": "^1.1.0",
@@ -19,5 +19,16 @@
     "path": "^0.12.7",
     "request": "^2.88.2",
     "sharp": "^0.30.3"
-  }
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.15"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OleksiiPaliiUA/Bot-Shop.git"
+  },
+  "bugs": {
+    "url": "https://github.com/OleksiiPaliiUA/Bot-Shop/issues"
+  },
+  "homepage": "https://github.com/OleksiiPaliiUA/Bot-Shop#readme"
 }
