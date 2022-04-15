@@ -10,7 +10,7 @@
     "fetch": "^1.1.0",
     "fs": "^0.0.1-security",
     "gm": "^1.23.1",
-    "mongoose": "^6.2.10",
+    "mongoose": "^6.3.0",
     "node-fetch": "2.0",
     "node-telegram-bot-api": "^0.56.0",
     "path": "^0.12.7",
