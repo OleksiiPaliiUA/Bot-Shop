@@ -75,6 +75,7 @@ function GetArrayNumber (id){
 
 const Goods = mongoose.model('goods')
 const Accounts = mongoose.model('accounts')
+//fsfsfs
 
 let GoodsCount
 
@@ -732,6 +733,8 @@ admin_bot.on('text', async msg => {
             break
     }
 })
+
+//Photo
 
 admin_bot.on('photo', async (msg) => {
     if(Connections[GetArrayNumber(msg.chat.id)] === undefined) {
